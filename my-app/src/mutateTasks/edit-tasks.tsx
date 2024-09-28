@@ -1,57 +1,66 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { getTaskById, updateTask } from "../tasks/tasks.slice";
+import { useState, useEffect } from "react"
+import { useNavigate, useParams } from "react-router-dom"
+import { useAppDispatch, useAppSelector } from "../app/hooks"
+import { getTaskById, updateTask } from "../tasks/tasks.slice"
 
 export const EditTask = () => {
-  const { id } = useParams<{ id: string }>();
-  const task = useAppSelector((state) => state.tasks.task);
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  const [title, setTitle] = useState(task?.title || "");
-  const [completed, setCompleted] = useState(task?.completed || false);
+  const { id } = useParams<{ id: string }>()
+  const task = useAppSelector(state => state.tasks.task)
+  const tasks = useAppSelector((state) => state.tasks.tasks);
+  const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+  const [text, setTitle] = useState(task?.text || "")
+  const [status, setStatus] = useState(task?.status || "pending")
+  const [date, setDate] = useState(task?.date || "1970-01-01")
 
   useEffect(() => {
-    if (id) {
-      dispatch(getTaskById(id));
+    if (!tasks.find(elm => elm.id === id)) {
+      navigate('/');
+    } else if (id) {
+      dispatch(getTaskById(id))
     }
-  }, [dispatch, id]);
+  }, [dispatch, id, navigate, tasks])
 
   useEffect(() => {
     if (task) {
-      setTitle(task.title);
-      setCompleted(task.completed);
+      setTitle(task.text)
+      setStatus(task.status)
+      setDate(task.date)
     }
-  }, [task]);
+  }, [task])
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    dispatch(updateTask({ id: id!, title, completed })).then(() => {
-      navigate('/');
-    });
-  };
+    e.preventDefault()
+    dispatch(updateTask({ id: id!, text, status, date })).then(() => {
+      navigate("/")
+    })
+  }
 
   return (
     <>
       <h3>Edit Task</h3>
       <form onSubmit={handleSubmit}>
-        <input 
+        <input
           type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Enter task title"
+          value={text}
+          onChange={e => setTitle(e.target.value)}
+          placeholder="Enter task text"
           required
         />
-        <label>
-          <input
-            type="checkbox"
-            checked={completed}
-            onChange={(e) => setCompleted(e.target.checked)}
-          />
-          Completed
-        </label>
+        <select onChange={e => setStatus(e.target.value)} value={status}>
+          <option value="pending">Pending</option>
+          <option value="completed">Completed</option>
+          <option value="onProgress">On Progress</option>
+        </select>
+        <input
+          type="date"
+          value={date}
+          onChange={e => setDate(e.target.value)}
+          placeholder="Enter task date"
+          required
+        />
         <button type="submit">Save Changes</button>
       </form>
     </>
-  );
-};
+  )
+}

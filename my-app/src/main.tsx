@@ -16,11 +16,11 @@ const router = createBrowserRouter([
     element: <Tasks />,
   },
   {
-    path: "/add-task",
+    path: "/add",
     element: <AddTask />,
   },
   {
-    path: "/edit-task/id",
+    path: "/edit/:id",
     element: <EditTask />,
   },
 ])

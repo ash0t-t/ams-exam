@@ -1,19 +1,8 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import type { ITaskState, ITask } from "../utils/types";
 
-interface Task {
-  id: string;
-  title: string;
-  completed: boolean;
-}
-
-interface TaskState {
-  tasks: Task[];
-  filteredTasks: Task[];
-  task: Task | null;
-}
-
-const initialState: TaskState = {
+const initialState: ITaskState = {
   tasks: [],
   filteredTasks: [],
   task: null,
@@ -29,12 +18,12 @@ export const getTaskById = createAsyncThunk("tasks/getTaskById", async (id: stri
   return response.data;
 });
 
-export const addTask = createAsyncThunk("tasks/addTask", async (task: Task) => {
+export const addTask = createAsyncThunk("tasks/addTask", async (task: ITask) => {
   const response = await axios.post("http://localhost:3000/tasks", task);
   return response.data;
 });
 
-export const updateTask = createAsyncThunk("tasks/updateTask", async (task: Task) => {
+export const updateTask = createAsyncThunk("tasks/updateTask", async (task: ITask) => {
   const response = await axios.put(`http://localhost:3000/tasks/${task.id}`, task);
   return response.data;
 });
@@ -43,11 +32,13 @@ const tasksSlice = createSlice({
   name: "tasks",
   initialState,
   reducers: {
-    filterTasksByProgress: (state, action: PayloadAction<"all" | "completed" | "incomplete">) => {
+    filterTasksByProgress: (state, action: PayloadAction<"pending" | "completed" | "onProgress">) => {
       if (action.payload === "completed") {
-        state.filteredTasks = state.tasks.filter((task) => task.completed);
-      } else if (action.payload === "incomplete") {
-        state.filteredTasks = state.tasks.filter((task) => !task.completed);
+        state.filteredTasks = state.tasks.filter((task) => task.status === "completed");
+      } else if (action.payload === "pending") {
+        state.filteredTasks = state.tasks.filter((task) => task.status === "pending");
+      } else if (action.payload === "onProgress") {
+        state.filteredTasks = state.tasks.filter((task) => task.status === "onProgress");
       } else {
         state.filteredTasks = state.tasks;
       }

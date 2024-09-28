@@ -2,10 +2,7 @@ import { useAppDispatch } from "../app/hooks";
 import { useForm } from "react-hook-form";
 import { addTask } from "../tasks/tasks.slice";
 import { useNavigate } from "react-router-dom";
-
-interface TaskFormData {
-  title: string;
-}
+import type { TaskFormData } from "../utils/types";
 
 export const AddTask = () => {
   const { register, handleSubmit, reset, formState: { errors } } = useForm<TaskFormData>();
@@ -14,8 +11,10 @@ export const AddTask = () => {
 
   const onSubmit = (data: TaskFormData) => {
     dispatch(addTask({
-      title: data.title, completed: false,
       id: Date.now().toString(),
+      text: data.text,
+      status: data.status,
+      date: data.date,
     })).then(() => {
       reset(); 
       navigate('/');
@@ -27,14 +26,25 @@ export const AddTask = () => {
       <h3>Add New Task</h3>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
-          <label htmlFor="title">Task Title</label>
+          <label htmlFor="text">Task Text</label>
           <input
-            id="title"
+            id="text"
             type="text"
-            {...register("title", { required: "Task title is required" })}
+            {...register("text", { required: "Task text is required" })}
             placeholder="Enter task title"
           />
-          {errors.title && <span>{errors.title.message}</span>}
+          <select id="status" {...register("status")}>
+            <option value="pending">Pending</option>
+            <option value="completed">Completed</option>
+            <option value="onProgress">On Progress</option>
+          </select>
+          <input
+            id="date"
+            type="date"
+            {...register("date", { required: "Task date is required" })}
+          />
+          {errors.text && <span>{errors.text.message}</span>}
+          {errors.date && <span>{errors.date.message}</span>}
         </div>
 
         <button type="submit">Add Task</button>

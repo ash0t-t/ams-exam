@@ -1,12 +1,14 @@
-export interface IState {
-  tasks: ITask[]
-}
-
 export interface ITask {
-  id: number,
-  text: string,
-  completed: string,
-  date: string
+  id: string;
+  text: string;
+  status: string;
+  date: string;
 }
 
-export type PayloadTask = Omit<ITask, 'id'>
+export interface ITaskState {
+  tasks: ITask[];
+  filteredTasks: ITask[];
+  task: ITask | null;
+}
+
+export type TaskFormData  = Omit<ITask, 'id'>
