@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { useAppDispatch, useAppSelector } from "../app/hooks"
-import { getTaskById, updateTask } from "../tasks/tasks.slice"
+import { deleteTask, getTaskById, updateTask } from "../tasks/tasks.slice"
 
 export const EditTask = () => {
   const { id } = useParams<{ id: string }>()
@@ -36,6 +36,12 @@ export const EditTask = () => {
     })
   }
 
+  const handleDelete = () => {
+    dispatch(deleteTask(id!)).then(() => {
+      navigate("/")
+    })
+  }
+
   return (
     <>
       <h3>Edit Task</h3>
@@ -61,6 +67,7 @@ export const EditTask = () => {
         />
         <button type="submit">Save Changes</button>
       </form>
+      <button onClick={handleDelete}>Delete Task</button>
     </>
   )
 }
